@@ -19,6 +19,7 @@
     "vite": "^8.0.1"
   },
   "dependencies": {
+    "@inertiajs/svelte": "^2.3.18",
     "@tailwindcss/vite": "^4.2.2",
     "tailwindcss": "^4.2.2"
   }

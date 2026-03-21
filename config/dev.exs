@@ -24,7 +24,18 @@ config :api_server, ApiServerWeb.Endpoint,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "irmrZTgIJmoXuwq7/ohA+4PZFRTUjq0ke9bAPIuect2vuo3mW6m7g0ratth4Jwtl",
-  watchers: []
+  watchers: [
+    npx: [
+      "vite",
+      "build",
+      "--mode",
+      "development",
+      "--watch",
+      "--config",
+      "vite.config.js",
+      cd: Path.expand("../frontend", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #

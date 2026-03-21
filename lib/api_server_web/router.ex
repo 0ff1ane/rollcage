@@ -8,6 +8,7 @@ defmodule ApiServerWeb.Router do
     plug :put_root_layout, html: {ApiServerWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Inertia.Plug
   end
 
   pipeline :api do
@@ -17,7 +18,9 @@ defmodule ApiServerWeb.Router do
   scope "/", ApiServerWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    get "/", PageController, :login
+    get "/counter", PageController, :counter
+    get "/todos", PageController, :todos
   end
 
   # Other scopes may use custom stacks.
@@ -27,7 +30,6 @@ defmodule ApiServerWeb.Router do
 
   # Enable Swoosh mailbox preview in development
   if Application.compile_env(:api_server, :dev_routes) do
-
     scope "/dev" do
       pipe_through :browser
 

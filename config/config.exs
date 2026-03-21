@@ -22,6 +22,15 @@ config :api_server, ApiServerWeb.Endpoint,
   pubsub_server: ApiServer.PubSub,
   live_view: [signing_salt: "IR6ShoAG"]
 
+config :inertia,
+  endpoint: ApiServerWeb.Endpoint,
+  static_paths: ["/assets/main.tsx"],
+  default_version: "1",
+  camelize_props: false,
+  history: [encrypt: false],
+  ssr: false,
+  raise_on_ssr_failure: config_env() != :prod
+
 # Configure the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

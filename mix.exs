@@ -55,7 +55,8 @@ defmodule ApiServer.MixProject do
       {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:inertia, "~> 2.6.0"}
     ]
   end
 
@@ -71,7 +72,17 @@ defmodule ApiServer.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"],
+      "assets.setup": [
+        "cmd --cd frontend npm install"
+      ],
+      "assets.build": [
+        "cmd --cd frontend npx vite build --config vite.config.js"
+      ],
+      "assets.deploy": [
+        "cmd --cd frontend npx vite build --mode production --config vite.config.js",
+        "phx.digest"
+      ]
     ]
   end
 end
