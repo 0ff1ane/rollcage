@@ -15,12 +15,30 @@ defmodule ApiServerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug ApiServerWeb.VerifyUserPlug
+  end
+
   scope "/", ApiServerWeb do
     pipe_through :browser
 
     get "/", PageController, :login
     get "/counter", PageController, :counter
     get "/todos", PageController, :todos
+  end
+
+  # public /api routes
+  scope "/api", ApiServerWeb do
+    pipe_through [:api]
+
+    post "/users", UserController, :create
+  end
+
+  # authenticated /api routes
+  scope "/api", ApiServerWeb do
+    pipe_through [:api, :auth]
+
+    resources "/users", UserController, except: [:new, :delete]
   end
 
   # Other scopes may use custom stacks.
