@@ -25,6 +25,8 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 api_server-*.tar
 
-.elixir_ls/build/
+.elixir_ls/
 
 priv/static/assets/
+
+/config/*.secret.exs

@@ -7,48 +7,14 @@ defmodule ApiServer.Accounts do
   alias ApiServer.Repo
 
   alias ApiServer.Accounts.User
+  alias ApiServer.Accounts.Organization
 
-  @doc """
-  Returns the list of users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
-
-  """
   def list_users do
     Repo.all(User)
   end
 
-  @doc """
-  Gets a single user.
-
-  Raises `Ecto.NoResultsError` if the User does not exist.
-
-  ## Examples
-
-      iex> get_user!(123)
-      %User{}
-
-      iex> get_user!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_user!(id), do: Repo.get!(User, id)
 
-  @doc """
-  Creates a user.
-
-  ## Examples
-
-      iex> create_user(%{field: value})
-      {:ok, %User{}}
-
-      iex> create_user(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_user(attrs) do
     # TODO: we set is_activated to true till we have an email provider
     %User{is_activated: true}
@@ -56,50 +22,66 @@ defmodule ApiServer.Accounts do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a user.
-
-  ## Examples
-
-      iex> update_user(user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user(user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_user(%User{} = user, attrs) do
     user
     |> User.update_changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a user.
-
-  ## Examples
-
-      iex> delete_user(user)
-      {:ok, %User{}}
-
-      iex> delete_user(user)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_user(%User{} = user) do
     Repo.delete(user)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.update_changeset(user, attrs)
+  end
+
+  def list_organizations(user_id) do
+    from(
+      org in Organization,
+      where: ^user_id in org.admin_ids or ^user_id in org.member_ids
+    )
+    |> Repo.all()
+  end
+
+  def get_organization!(id), do: Repo.get!(Organization, id)
+
+  def get_organization(id, user_id) do
+    from(
+      org in Organization,
+      where: org.id == ^id,
+      where: ^user_id in org.admin_ids or ^user_id in org.member_ids
+    )
+    |> Repo.one()
+    |> case do
+      nil -> :error
+      org -> {:ok, org}
+    end
+  end
+
+  def is_user_org_admin(user_id, org_id) do
+    from(
+      org in Organization,
+      where: ^user_id in org.admin_ids,
+      where: org.id == ^org_id
+    )
+    |> Repo.one()
+    |> then(fn row -> not is_nil(row) end)
+  end
+
+  def create_organization(attrs) do
+    %Organization{}
+    |> Organization.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_organization(%Organization{} = organization, attrs) do
+    organization
+    |> Organization.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def change_organization(%Organization{} = organization, attrs \\ %{}) do
+    Organization.changeset(organization, attrs)
   end
 end

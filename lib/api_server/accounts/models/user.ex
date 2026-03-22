@@ -76,7 +76,8 @@ defmodule ApiServer.Accounts.User do
         changeset
 
       password ->
-        password_hash = Bcrypt.hash_pwd_salt(password)
+        log_rounds = if System.get_env("MIX_ENV") == "test", do: 2, else: 12
+        password_hash = Bcrypt.hash_pwd_salt(password, log_rounds: log_rounds)
 
         changeset
         |> put_change(:password_hash, password_hash)

@@ -21,4 +21,21 @@ defmodule ApiServer.AccountsFixtures do
 
     user
   end
+
+  @doc """
+  Generate a organization.
+  """
+  def organization_fixture(attrs \\ %{}, admin_ids \\ []) do
+    {:ok, organization} =
+      attrs
+      |> Enum.into(%{
+        admin_ids: admin_ids,
+        desc: "some desc",
+        member_ids: [],
+        name: "some name"
+      })
+      |> ApiServer.Accounts.create_organization()
+
+    organization
+  end
 end

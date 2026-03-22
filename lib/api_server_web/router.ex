@@ -39,6 +39,7 @@ defmodule ApiServerWeb.Router do
     pipe_through [:api, :auth]
 
     resources "/users", UserController, except: [:new, :delete]
+    resources "/organizations", OrganizationController, except: [:delete]
   end
 
   # Other scopes may use custom stacks.
