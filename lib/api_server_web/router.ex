@@ -40,6 +40,7 @@ defmodule ApiServerWeb.Router do
 
     resources "/users", UserController, except: [:new, :delete]
     resources "/organizations", OrganizationController, except: [:delete]
+    resources "/projects", ProjectController, except: [:delete]
   end
 
   # Other scopes may use custom stacks.
