@@ -106,12 +106,14 @@ defmodule ApiServer.AccountsTest do
     end
 
     test "create_organization/1 with valid data creates a organization" do
-      valid_attrs = %{name: "some name", desc: "some desc", admin_ids: [], member_ids: []}
+      user = user_fixture()
+      user_id = user.id
+      valid_attrs = %{name: "some name", desc: "some desc", admin_ids: [user_id], member_ids: []}
 
       assert {:ok, %Organization{} = organization} = Accounts.create_organization(valid_attrs)
       assert organization.name == "some name"
       assert organization.desc == "some desc"
-      assert organization.admin_ids == []
+      assert organization.admin_ids == [user_id]
       assert organization.member_ids == []
     end
 
@@ -126,7 +128,7 @@ defmodule ApiServer.AccountsTest do
       update_attrs = %{
         name: "some updated name",
         desc: "some updated desc",
-        admin_ids: [],
+        admin_ids: [user.id],
         member_ids: []
       }
 
@@ -135,7 +137,7 @@ defmodule ApiServer.AccountsTest do
 
       assert organization.name == "some updated name"
       assert organization.desc == "some updated desc"
-      assert organization.admin_ids == []
+      assert organization.admin_ids == [user.id]
       assert organization.member_ids == []
     end
 
@@ -150,7 +152,8 @@ defmodule ApiServer.AccountsTest do
     end
 
     test "change_organization/1 returns a organization changeset" do
-      organization = organization_fixture()
+      user = user_fixture()
+      organization = organization_fixture(%{}, [user.id])
       assert %Ecto.Changeset{} = Accounts.change_organization(organization)
     end
   end

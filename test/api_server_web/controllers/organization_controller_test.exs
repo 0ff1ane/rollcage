@@ -2,7 +2,6 @@ defmodule ApiServerWeb.OrganizationControllerTest do
   use ApiServerWeb.ConnCase
 
   import ApiServer.AccountsFixtures
-  alias ApiServer.Accounts.Organization
 
   @create_attrs %{
     name: "some name",
@@ -104,16 +103,9 @@ defmodule ApiServerWeb.OrganizationControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, orgadmin: orgadmin} do
       organization = organization_fixture(%{}, [orgadmin.id])
-      organization_id = organization.id
 
       conn = put(conn, ~p"/api/organizations/#{organization}", organization: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
-  end
-
-  defp create_organization(_) do
-    organization = organization_fixture()
-
-    %{organization: organization}
   end
 end
