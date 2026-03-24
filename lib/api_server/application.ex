@@ -15,7 +15,12 @@ defmodule ApiServer.Application do
       # Start a worker by calling: ApiServer.Worker.start_link(arg)
       # {ApiServer.Worker, arg},
       # Start to serve requests, typically the last entry
-      ApiServerWeb.Endpoint
+      ApiServerWeb.Endpoint,
+      # Processes for uptime monitoring
+      ApiServer.Uptime.UptimeSupervisor,
+      ApiServer.Uptime.UptimeManager,
+      # TODO - move :uptime_monitors_registry name into common utils file and reuse
+      {Registry, [keys: :unique, name: :uptime_monitors_registry]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
