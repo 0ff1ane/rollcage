@@ -68,12 +68,13 @@ defmodule ApiServer.ProjectsTest do
       assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs)
       assert project.name == "some name"
       assert project.desc == "some desc"
-      assert project.image == "some image"
-      assert project.dsn == "some dsn"
       assert project.admin_ids == [user.id]
       assert project.organization_id == organization.id
       assert project.member_ids == []
       assert project.settings == %{}
+
+      {:ok, dsn} = Projects.get_dsn(project.id)
+      assert String.ends_with?(dsn, String.replace(project.id, "-", "")) == true
     end
 
     test "create_project/1 with invalid data returns error changeset" do
@@ -100,12 +101,12 @@ defmodule ApiServer.ProjectsTest do
       assert {:ok, %Project{} = project} = Projects.update_project(project, update_attrs)
       assert project.name == "some updated name"
       assert project.desc == "some updated desc"
-      assert project.image == "some updated image"
-      # dsn should not change
-      assert project.dsn == "some dsn"
       assert project.admin_ids == [user.id]
       assert project.member_ids == []
       assert project.settings == %{}
+
+      {:ok, dsn} = Projects.get_dsn(project.id)
+      assert String.ends_with?(dsn, String.replace(project.id, "-", "")) == true
     end
 
     test "update_project/2 with invalid data returns error changeset" do

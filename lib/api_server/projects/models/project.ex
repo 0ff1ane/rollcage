@@ -7,7 +7,6 @@ defmodule ApiServer.Projects.Project do
   schema "projects" do
     field :name, :string
     field :desc, :string
-    field :image, :string
     field :admin_ids, {:array, :binary_id}
     field :member_ids, {:array, :binary_id}
     field :settings, :map
@@ -23,7 +22,6 @@ defmodule ApiServer.Projects.Project do
     |> cast(attrs, [
       :name,
       :desc,
-      :image,
       :created_by_id,
       :organization_id,
       :admin_ids,
@@ -33,7 +31,6 @@ defmodule ApiServer.Projects.Project do
     |> validate_required([
       :name,
       :desc,
-      :image,
       :created_by_id,
       :organization_id,
       :admin_ids,
@@ -49,7 +46,6 @@ defmodule ApiServer.Projects.Project do
     |> cast(attrs, [
       :name,
       :desc,
-      :image,
       :admin_ids,
       :member_ids,
       :settings
@@ -57,7 +53,6 @@ defmodule ApiServer.Projects.Project do
     |> validate_required([
       :name,
       :desc,
-      :image,
       :admin_ids,
       :member_ids
     ])

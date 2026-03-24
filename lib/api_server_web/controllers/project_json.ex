@@ -20,7 +20,6 @@ defmodule ApiServerWeb.ProjectJSON do
       id: project.id,
       name: project.name,
       desc: project.desc,
-      image: project.image,
       admin_ids: project.admin_ids,
       member_ids: project.member_ids,
       settings: project.settings

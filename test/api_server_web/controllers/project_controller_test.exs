@@ -85,8 +85,6 @@ defmodule ApiServerWeb.ProjectControllerTest do
                "id" => ^id,
                "admin_ids" => [^projadmin_id],
                "desc" => "some desc",
-               "dsn" => "some dsn",
-               "image" => "some image",
                "member_ids" => [],
                "name" => "some name",
                "settings" => %{}
@@ -124,9 +122,6 @@ defmodule ApiServerWeb.ProjectControllerTest do
                "id" => ^project_id,
                "admin_ids" => [^projadmin_id],
                "desc" => "some updated desc",
-               # dsn should not change
-               "dsn" => "some dsn",
-               "image" => "some updated image",
                "member_ids" => [],
                "name" => "some updated name",
                "settings" => %{}

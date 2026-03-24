@@ -6,7 +6,6 @@ defmodule ApiServer.Repo.Migrations.CreateProjects do
       add :id, :binary_id, primary_key: true
       add :name, :string, null: false
       add :desc, :string
-      add :image, :string
       add :admin_ids, {:array, :binary_id}
       add :member_ids, {:array, :binary_id}
       add :settings, :map

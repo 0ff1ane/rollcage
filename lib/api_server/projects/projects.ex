@@ -18,30 +18,33 @@ defmodule ApiServer.Projects do
 
   def get_project!(id), do: Repo.get!(Project, id)
 
-  def get_project_as_admin(id, user_id) do
+  defp base_get_query(id) do
     from(
       proj in Project,
-      where: proj.id == ^id,
-      where: ^user_id in proj.admin_ids
+      where: proj.id == ^id
     )
-    |> Repo.one()
+  end
+
+  defp nillable_to_tuple(value) do
+    value
     |> case do
       nil -> {:error, :not_found}
       proj -> {:ok, proj}
     end
   end
 
-  def get_project(id, user_id) do
-    from(
-      proj in Project,
-      where: proj.id == ^id,
-      where: ^user_id in proj.admin_ids or ^user_id in proj.member_ids
-    )
+  def get_project_as_admin(id, user_id) do
+    base_get_query(id)
+    |> where([proj], ^user_id in proj.admin_ids)
     |> Repo.one()
-    |> case do
-      nil -> {:error, :not_found}
-      proj -> {:ok, proj}
-    end
+    |> nillable_to_tuple()
+  end
+
+  def get_project(id, user_id) do
+    base_get_query(id)
+    |> where([proj], ^user_id in proj.admin_ids or ^user_id in proj.member_ids)
+    |> Repo.one()
+    |> nillable_to_tuple()
   end
 
   def is_user_project_admin(user_id, proj_id) do
