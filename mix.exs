@@ -57,7 +57,8 @@ defmodule ApiServer.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:inertia, "~> 2.6.0"},
-      {:bcrypt_elixir, "~> 3.0"}
+      {:bcrypt_elixir, "~> 3.0"},
+      {:ua_parser, "~> 1.8"}
     ]
   end
 
