@@ -59,8 +59,14 @@ defmodule ApiServer.Uptime do
     uptime_monitor
     |> UptimeMonitor.update_changeset(attrs)
     |> Repo.update()
-    |> tap(fn uptime_monitor ->
-      UptimeManager.update_monitor(uptime_monitor)
+    |> tap(fn data ->
+      case data do
+        {:ok, uptime_monitor} ->
+          UptimeManager.update_monitor(uptime_monitor)
+
+        _ ->
+          nil
+      end
     end)
   end
 
