@@ -9,6 +9,8 @@ Not planned to be a SaaS product
   
 ## Planned Architecture
 
+<img width="1067" height="623" alt="Screenshot 2026-03-26 at 22 15 41" src="https://github.com/user-attachments/assets/f644d015-8aa8-41d3-9964-c1b5fd66fb6a" />
+
 ### ClickHouse
 
 Use ClickHouse for most of the heavy lifting
