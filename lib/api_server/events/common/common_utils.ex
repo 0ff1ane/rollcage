@@ -268,16 +268,18 @@ defmodule ApiServer.Events.CommonUtils do
         search_vec
         |> String.split(" ")
         |> Enum.reduce(
+          {[], 0},
           fn word, {words, str_length} ->
-            if str_length + length(word) < @max_vector_string_segment_len do
-              {[word | words], str_length + length(word)}
+            if str_length + String.length(word) < @max_vector_string_segment_len do
+              {[word | words], str_length + String.length(word)}
             else
               {words, str_length}
             end
-          end,
-          {[], 0}
+          end
         )
+        |> elem(0)
         |> Enum.reverse()
+        |> Enum.join(" ")
       end
     end)
   end
