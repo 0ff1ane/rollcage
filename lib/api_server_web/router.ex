@@ -32,6 +32,7 @@ defmodule ApiServerWeb.Router do
     pipe_through [:api]
 
     post "/users", UserController, :create
+    post "/dsn/:project_id_hex", EventsController, :handle_event
   end
 
   # authenticated /api routes

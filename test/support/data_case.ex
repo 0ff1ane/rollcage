@@ -19,6 +19,7 @@ defmodule ApiServer.DataCase do
   using do
     quote do
       alias ApiServer.Repo
+      alias ApiServer.ChRepo
 
       import Ecto
       import Ecto.Changeset

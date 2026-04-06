@@ -10,6 +10,12 @@ config :api_server, ApiServer.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+# Configure clickhouse database running in docker
+config :api_server, ApiServer.ChRepo,
+  url: "http://localhost:8123/rollcage_events_db",
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

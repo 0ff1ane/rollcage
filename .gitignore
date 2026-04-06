@@ -30,3 +30,5 @@ api_server-*.tar
 priv/static/assets/
 
 /config/*.secret.exs
+
+test/support/fixtures/data

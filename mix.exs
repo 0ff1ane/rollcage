@@ -58,7 +58,8 @@ defmodule ApiServer.MixProject do
       {:bandit, "~> 1.5"},
       {:inertia, "~> 2.6.0"},
       {:bcrypt_elixir, "~> 3.0"},
-      {:ua_parser, "~> 1.8"}
+      {:ua_parser, "~> 1.8"},
+      {:ecto_ch, "~> 0.8.0"}
     ]
   end
 
