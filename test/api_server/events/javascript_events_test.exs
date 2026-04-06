@@ -13,11 +13,19 @@ defmodule ApiServer.JavascriptEventsTest do
       event = file_path |> File.read!() |> JSON.decode!()
 
       %{
+        "title" => title,
+        "search_vector" => search_vector,
+        "metadata" => metadata,
         "payload" => payload,
         "contexts" => contexts,
         "tags" => tags,
         "stackframes" => stackframes
       } = Events.parse(event)
+
+      assert "<unknown>: Error with context" = title
+      assert "<unknown>: Error with context http://localhost/" = search_vector
+
+      assert %{"key" => "Error", "value" => "Error with context"} = metadata
 
       assert %{"os" => %{"name" => "Ubuntu"}} = contexts
       assert %{"os" => %{"os.name" => "Ubuntu"}} = tags

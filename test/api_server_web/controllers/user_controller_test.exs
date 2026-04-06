@@ -9,12 +9,11 @@ defmodule ApiServerWeb.UserControllerTest do
     name: "some name",
     email: "email@gg.com",
     password: "mypassword",
-    password_confirm: "mypassword",
-    profile_image: "some profile_image"
+    password_confirm: "mypassword"
   }
   @update_attrs %{
     name: "some updated name",
-    email: "email@gg.com",
+    email: "newemail@gg.com",
     password: "somepassword",
     profile_image: "some updated profile_image"
   }

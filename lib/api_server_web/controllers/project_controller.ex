@@ -42,7 +42,7 @@ defmodule ApiServerWeb.ProjectController do
 
   def show(conn, %{"id" => id}) do
     with current_user <- conn.assigns.current_user,
-         {:ok, project} <- Projects.get_project(id, current_user.id) do
+         {:ok, project} <- Projects.get_project_for_user(id, current_user.id) do
       render(conn, :show, project: project)
     end
   end

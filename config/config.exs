@@ -8,7 +8,7 @@
 import Config
 
 config :api_server,
-  ecto_repos: [ApiServer.Repo],
+  ecto_repos: [ApiServer.Repo, ApiServer.ChRepo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Configure the endpoint

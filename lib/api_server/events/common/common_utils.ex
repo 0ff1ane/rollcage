@@ -125,4 +125,162 @@ defmodule ApiServer.Events.CommonUtils do
     }
     |> remove_nil_values()
   end
+
+  def get_path(data, []), do: {data, []}
+
+  def get_path(data, [key | rst] = keys) do
+    cond do
+      is_map(data) && Map.has_key?(data, key) ->
+        get_path(Map.get(data, key), rst)
+
+      is_list(data) && is_integer(key) ->
+        case Enum.at(data, key, :none) do
+          :none -> {data, keys}
+          val -> get_path(val, rst)
+        end
+
+      true ->
+        {data, keys}
+    end
+  end
+
+  def get_metadata_type(exception) do
+    case get_path(exception, ["mechanism", "synthetic"]) do
+      {value, []} -> String.slice(value, 0..128)
+      _ -> "Error"
+    end
+  end
+
+  def get_metadata(data) do
+    paths = [
+      ["logentry", "formatted"],
+      ["logentry", "message"],
+      ["message", "formatted"],
+      ["message"]
+    ]
+
+    message = Enum.find(paths, fn path -> get_path(data, path) |> elem(1) |> length == 0 end)
+
+    title =
+      if is_binary(message) and String.valid?(message) do
+        message
+        |> String.trim()
+        |> String.split("\n")
+        |> Enum.at(0)
+        |> String.slice(0..100)
+      else
+        "<unlabeled event>"
+      end
+
+    %{"title" => title}
+  end
+
+  defp get_last_exception(data) do
+    [
+      get_path(data, ["exception", "values", -1]),
+      get_path(data, ["exception", -1])
+    ]
+    |> Enum.find(
+      nil,
+      fn {_last_exception, rst} -> length(rst) == 0 end
+    )
+  end
+
+  def get_error_event_metadata(data) do
+    exceptions = Map.get(data, "exceptions", [])
+
+    if is_list(exceptions) and length(exceptions) == 0 do
+      %{}
+    else
+      last_exception = get_last_exception(data)
+
+      value =
+        case last_exception do
+          nil -> %{}
+          last_exception -> Map.get(last_exception, "value", "")
+        end
+
+      %{
+        "key" => get_metadata_type(last_exception),
+        "value" => value
+      }
+    end
+
+    # TODO - get "filename" and "function"
+  end
+
+  def get_title(metadata) do
+    type = Map.get(metadata, "type", Map.get(metadata, "function", "<unknown>"))
+    value = Map.get(metadata, "value")
+
+    case value do
+      nil ->
+        type
+
+      _ ->
+        trunc_val =
+          value
+          |> String.split("\n")
+          |> Enum.at(0)
+          |> String.slice(0..128)
+
+        "#{type}: #{trunc_val}"
+    end
+  end
+
+  @max_search_part_length 250
+  @max_vector_string_segment_len 2048
+  def get_search_vector_uri_part(event) do
+    case get_path(event, ["request", "url"]) do
+      {url, []} ->
+        parsed_url = URI.parse(url)
+
+        truncated_path =
+          String.slice(parsed_url.path, 0..@max_search_part_length)
+
+        String.slice(
+          "#{parsed_url.scheme}://#{parsed_url.host}#{truncated_path}",
+          0..@max_search_part_length
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  @doc """
+  Get string for search vector. The string must be short to ensure
+  performance.
+  """
+  def get_search_vector(event, title, transaction) do
+    [
+      title && String.slice(title, 0..@max_search_part_length),
+      transaction && String.slice(transaction, 0..@max_search_part_length),
+      get_search_vector_uri_part(event)
+      # TODO - Add stacktrace filenames
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> then(fn search_vec ->
+      if String.length(search_vec) <= @max_vector_string_segment_len do
+        search_vec
+      else
+        search_vec
+        |> String.split(" ")
+        |> Enum.reduce(
+          {[], 0},
+          fn word, {words, str_length} ->
+            if str_length + String.length(word) < @max_vector_string_segment_len do
+              {[word | words], str_length + String.length(word)}
+            else
+              {words, str_length}
+            end
+          end
+        )
+        |> elem(0)
+        |> Enum.reverse()
+        |> Enum.join(" ")
+      end
+    end)
+  end
 end

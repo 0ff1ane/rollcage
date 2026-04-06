@@ -13,6 +13,10 @@ config :api_server, ApiServer.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
+config :api_server, ApiServer.ChRepo,
+  hostname: "localhost",
+  database: "rollcage_clickhouse_server_test#{System.get_env("MIX_TEST_PARTITION")}"
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :api_server, ApiServerWeb.Endpoint,
