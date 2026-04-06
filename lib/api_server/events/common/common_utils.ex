@@ -162,8 +162,12 @@ defmodule ApiServer.Events.CommonUtils do
     message = Enum.find(paths, fn path -> get_path(data, path) |> elem(1) |> length == 0 end)
 
     title =
-      if message do
-        String.slice(String.trim(message) |> String.split("\n") |> Enum.at(0), 0..100)
+      if is_binary(message) and String.valid?(message) do
+        message
+        |> String.trim()
+        |> String.split("\n")
+        |> Enum.at(0)
+        |> String.slice(0..100)
       else
         "<unlabeled event>"
       end
@@ -171,41 +175,35 @@ defmodule ApiServer.Events.CommonUtils do
     %{"title" => title}
   end
 
-  def get_error_event_metadata(data) do
-    exception = Map.get(data, "exception", [])
+  defp get_last_exception(data) do
+    [
+      get_path(data, ["exception", "values", -1]),
+      get_path(data, ["exception", -1])
+    ]
+    |> Enum.find(
+      nil,
+      fn {_last_exception, rst} -> length(rst) == 0 end
+    )
+  end
 
-    if is_list(exception) and length(exception) == 0 do
+  def get_error_event_metadata(data) do
+    exceptions = Map.get(data, "exceptions", [])
+
+    if is_list(exceptions) and length(exceptions) == 0 do
       %{}
     else
-      exception =
-        case get_path(data, ["exception", "values", -1]) do
-          {value, []} ->
-            value
+      last_exception = get_last_exception(data)
 
-          {_partial, _} ->
-            case get_path(data, ["exception", -1]) do
-              {value, []} -> value
-              {_partial, _} -> nil
-            end
+      value =
+        case last_exception do
+          nil -> %{}
+          last_exception -> Map.get(last_exception, "value", "")
         end
 
-      if is_nil(exception) do
-        %{}
-      else
-        value =
-          case get_path(exception, ["value"]) do
-            {value, []} ->
-              value
-
-            _ ->
-              ""
-          end
-
-        %{
-          "key" => get_metadata_type(exception),
-          "value" => value
-        }
-      end
+      %{
+        "key" => get_metadata_type(last_exception),
+        "value" => value
+      }
     end
 
     # TODO - get "filename" and "function"
